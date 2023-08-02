@@ -7,7 +7,7 @@ function Form() {
   }
   return (
     <>
-      <form>
+      <form onSubmit={handleSubmit}  >
         <input id="values" name="values" type="text" />
         <select id="operation" name="operation">
           <option value=""></option>
