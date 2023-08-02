@@ -4,6 +4,9 @@ import "./App.css";
 import { useState } from 'react';
 
 function App() {
+  function handleSubmit(){
+    e.preventDefault();
+  }
   return (
     <main>
       <p>Enter each number in the array, separated by a ','</p>
