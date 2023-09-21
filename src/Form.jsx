@@ -2,22 +2,65 @@ import React from "react";
 import "./Form.css";
 
 function Form() {
-  function handleSubmit(){
-    e.preventDefault();
-  }
-  const [numbers, setNumbers] = useState([]);
-  const [newNumbers, setNewNumbers] = useState([]);
+  const [newInput, setNewInput] = useState("");
+  const [selectOption, setSelectOption] = useState("");
+  const [result, setResult] = useState("");
+
   const handleTextChange = (e) => {
-    setNumbers();{
-     
-    };
+    setNewInput(e.target.value)
+    setResult("")
   }
+
+  const handleSelectChange = (e) => {
+    setSelectOption(e.target.value)
+  }
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+
+    const numbers = newInput.split(",").map((num) => parseInt(num.trim(), 10));
+
+    if (numbers.some(isNaN)){
+      setResult("Invalid");
+      return;
+    }
+
+    switch(selectOption){
+      case "sum":
+        setResult(sum(numbers));
+        break;
+      case "average":
+        setResult(average(numbers));
+        break;
+        default:
+          setResult("No operation selected");
+    }
+
+    setNewInput([]);
+    setsSelectOption("");
+  }
+  const sum = (numbers) => {
+    return numbers.reduce((a,b) => a + b, 0);
+  }
+
+  const average = (numbers)  => {
+    return sum(numbers)/numbers.length;
+  }
+  const mode = (numbers) => {
+    let counts = numbers.reduce(
+      (acc, value) => ({...acc, [value]: (acc[value] || 0) + 1}),
+      {}
+    );
+    let maxCount = Math.max(...Object.values(counts));
+    let mode = Object.keys(counts).find((key) => counts[key] === maxCount);
+    return parseInt(mode, 10);
+  }
+
   return (
     <>
-      <form onSubmit={handleSubmit}  >
-        <input id="values" name="values" type="text"
-        onChange = {handleTextChange} />
-        <select id="operation" name="operation">
+    <form onSubmit={handleSubmit}>
+        <input id="values" name="values" type="text" value={newInput} onChange={handleTextchange} htmlfor="operation" />
+        <select id="operation" name="operation" value={selectOption} onChange={handleSelectChange}>
           <option value=""></option>
           <option value="sum">sum</option>
           <option value="average">average</option>
@@ -26,7 +69,7 @@ function Form() {
         <button type="submit">Calculate</button>
       </form>
       <section id="result">
-        <p></p>
+        <p>{result}</p>
       </section>
     </>
   );
