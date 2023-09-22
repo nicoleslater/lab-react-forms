@@ -7,10 +7,10 @@ function Form() {
   const [selectOption, setSelectOption] = useState("");
   const [result, setResult] = useState("");
 
-  const handleTextChange = (e) => {
-    setNewInput(e.target.value)
-    setResult("")
-  }
+  // const handleTextChange = (e) => {
+  //   setNewInput(e.target.value)
+  //   setResult("")
+  // }
 
   const handleSelectChange = (e) => {
     setSelectOption(e.target.value)
