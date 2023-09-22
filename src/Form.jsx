@@ -3,71 +3,84 @@ import "./Form.css";
 import {useState} from 'react';
 
 function Form() {
-  const [newInput, setNewInput] = useState("");
-  const [selectOption, setSelectOption] = useState("");
+  const [inputValues, setInputValues] = useState("");
+  const [selectedOperation, setSelectedOperation] = useState("");
   const [result, setResult] = useState("");
+  const [isError, setIsError] = useState(false);
 
-  // const handleTextChange = (e) => {
-  //   setNewInput(e.target.value)
-  //   setResult("")
-  // }
+  const handleInputChange = (e) => {
+    setInputValues(e.target.value);
+    setIsError(false);
+  };
 
   const handleSelectChange = (e) => {
-    setSelectOption(e.target.value)
-  }
+    setSelectedOperation(e.target.value);
+    setIsError(false);
+    setResult("");
+  };
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
+  const calculateResult = (values, operation) => {
+    const numbers = values.split(",").map((num) => parseInt(num.trim()));
 
-    const numbers = newInput.split(",").map((num) => parseInt(num.trim(), 10));
-
-    if (numbers.some(isNaN)){
-      setResult("Invalid");
+    if (numbers.some(isNaN)) {
+      setIsError(true);
+      setResult("Invalid input.");
       return;
     }
 
-    switch(selectOption){
-      case "sum":
-        setResult(sum(numbers));
-        break;
-      case "average":
-        setResult(average(numbers));
-        break;
-        default:
-          setResult("No operation selected");
+    let calculatedResult;
+
+    if (operation === "sum") {
+      calculatedResult = numbers.reduce((acc, num) => acc + num, 0);
+    } else if (operation === "average") {
+      calculatedResult = numbers.reduce((acc, num) => acc + num, 0) / numbers.length;
+    } else if (operation === "mode") {
+      const occurrences = {};
+      numbers.forEach((num) => {
+        occurrences[num] = occurrences[num] ? occurrences[num] + 1 : 1;
+      });
+      let maxOccurrences = 0;
+      let mode = null;
+      for (const num in occurrences) {
+        if (occurrences[num] > maxOccurrences) {
+          maxOccurrences = occurrences[num];
+          mode = num;
+        }
+      }
+      calculatedResult = mode;
     }
 
-    setNewInput([]);
-    setsSelectOption("");
-  }
-  const sum = (numbers) => {
-    return numbers.reduce((a,b) => a + b, 0);
-  }
+    setResult(calculatedResult);
+    setInputValues(""); 
+  };
 
-  const average = (numbers)  => {
-    return sum(numbers)/numbers.length;
-  }
-  const mode = (numbers) => {
-    let counts = numbers.reduce(
-      (acc, value) => ({...acc, [value]: (acc[value] || 0) + 1}),
-      {}
-    );
-    let maxCount = Math.max(...Object.values(counts));
-    let mode = Object.keys(counts).find((key) => counts[key] === maxCount);
-    return parseInt(mode, 10);
-  }
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    calculateResult(inputValues, selectedOperation);
+  };
 
   return (
     <>
-    <form onSubmit={handleSubmit}>
-        <input id="values" name="values" type="text" value={newInput} onChange={handleTextchange} htmlfor="operation" />
-        <select id="operation" name="operation" value={selectOption} onChange={handleSelectChange}>
-          <option value=""></option>
+     <form onSubmit={handleSubmit}>
+        <input
+          id="values"
+          name="values"
+          type="text"
+          value={inputValues}
+          onChange={handleInputChange}
+          className={isError ? "error" : ""}
+        />
+        <select
+          id="operation"
+          name="operation"
+          value={selectedOperation}
+          onChange={handleSelectChange}
+          className={isError ? "error" : ""}
+        />
+           <option value=""></option>
           <option value="sum">sum</option>
           <option value="average">average</option>
-          <option value="mode">mode</option>
-        </select>
-        <button type="submit">Calculate</button>
+          <button type="submit">Calculate</button>
       </form>
       <section id="result">
         <p>{result}</p>
